@@ -1,0 +1,50 @@
+name: hive
+
+x-db-common: &db-common
+  POSTGRES_DB: ${POSTGRES_DB}
+  POSTGRES_USER: ${POSTGRES_USER}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+services:
+  backend:
+    container_name: ${SERVER_CID}
+    image: mcr.microsoft.com/devcontainers/base:bookworm
+    environment:
+      <<: *db-common
+      SERVER_PORT: ${SERVER_PORT}
+      POSTGRES_CID: ${POSTGRES_CID}
+      POSTGRES_PORT: ${POSTGRES_PORT} 
+    # When network mode is linked to a service, don't publish ports.
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    volumes:
+      - ../..:/workspaces/hive-backend:cached
+    command: sleep infinity
+    depends_on:
+      db:
+        condition: service_healthy
+    # This links the network of the backend service to the db service.
+    # network_mode: service:db
+    # restart: unless-stopped
+
+  db:
+    container_name: ${POSTGRES_CID}
+    image: postgres:16.4-bookworm
+    environment:
+      <<: *db-common
+    # When network mode is linked to a service, don't publish ports.
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ../initdb-scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "$POSTGRES_USER"]
+      interval: 10s
+      timeout: 30s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
