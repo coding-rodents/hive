@@ -1,22 +1,30 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
 {
-	"name": "Hive Frontend",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bookworm",
+	// "image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bookworm",
+	
+	"name": "Hive Frontend",
+	"dockerComposeFile": ["../../docker/docker-compose.yml"],
+	"service": "frontend",
+	"runServices": ["frontend"],
+	// "shutdownAction": "none",
+	"workspaceFolder": "/workspace/frontend",
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
-	"features": {
-		"ghcr.io/devcontainers-contrib/features/angular-cli:2": {
-			"version": "~18.2.9"
-		}
-	},
+	// "features": {
+	// 	"ghcr.io/devcontainers-contrib/features/angular-cli:2": {
+	// 		"version": "~18.2.9"
+	// 	}
+	// },
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
+	// "forwardPorts": [
+	// 	"${containerEnv:FRONTEND_PORT:4200}"
+	// ],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "yarn install",
+	"postCreateCommand": "npm install -g @angular/cli@~18.2.9",
 
 	// Configure tool-specific properties.
 	"customizations": {
@@ -25,9 +33,11 @@
 				"ms-azuretools.vscode-docker",
 				"angular.ng-template",
 				"cyrilletuzi.angular-schematics",
-				"esbenp.prettier-vscode",
-				"formulahendry.auto-rename-tag"
-			]
+				"esbenp.prettier-vscode"
+			],
+			"settings": {
+				"editor.linkedEditing": true
+			}
 		}
 	}
 

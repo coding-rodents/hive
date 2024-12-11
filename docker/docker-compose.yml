@@ -6,19 +6,33 @@ x-db-common: &db-common
   POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
 services:
+
+  frontend:
+    container_name: ${FRONTEND_CID}
+    image: mcr.microsoft.com/devcontainers/typescript-node:1-20-bookworm
+    environment:
+      FRONTEND_PORT: ${FRONTEND_PORT}
+      BACKEND_CID: ${BACKEND_CID}
+      BACKEND_PORT: ${BACKEND_PORT}
+    ports:
+      - "${FRONTEND_PORT}:4200"
+    volumes:
+      - ..:/workspace:cached
+    command: sleep infinity
+
   backend:
-    container_name: ${SERVER_CID}
+    container_name: ${BACKEND_CID}
     image: mcr.microsoft.com/devcontainers/base:bookworm
     environment:
       <<: *db-common
-      SERVER_PORT: ${SERVER_PORT}
+      BACKEND_PORT: ${BACKEND_PORT}
       POSTGRES_CID: ${POSTGRES_CID}
       POSTGRES_PORT: ${POSTGRES_PORT} 
     # When network mode is linked to a service, don't publish ports.
     ports:
-      - "${SERVER_PORT}:${SERVER_PORT}"
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
     volumes:
-      - ../..:/workspaces/hive-backend:cached
+      - ..:/workspace:cached
     command: sleep infinity
     depends_on:
       db:
@@ -37,14 +51,14 @@ services:
       - "${POSTGRES_PORT}:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ../initdb-scripts:/docker-entrypoint-initdb.d
+      - ../database:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "$POSTGRES_USER"]
       interval: 10s
       timeout: 30s
       retries: 5
       start_period: 5s
-    restart: unless-stopped
+    # restart: unless-stopped
 
 volumes:
   postgres-data:
