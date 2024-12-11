@@ -1,0 +1,6 @@
+[submodule "backend"]
+	path = backend
+	url = https://github.com/polsl-tai-proj/hive-backend.git
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/polsl-tai-proj/hive-frontend.git
