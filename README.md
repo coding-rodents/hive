@@ -14,11 +14,54 @@ The recommended way of cloning the Hive project is through cloning this reposito
 
 Cloning through GitHub Desktop clones the submodules automatically and is the most effortless way in my opinion. For guide in cloning through git CLI, see git docs.
 
-## Devcontainers
+After cloning the repository with the submodules, go into both backend and frontend repositories and checkout to the named versions of the branches (submodules are tracked by commit hashes, so to keep things clean, switch the submodule repository branch to the named version to avoid confusion).
+
+## Local development
+
+### Dependencies
+
+`Docker` is required for managing the containerized database.
+
+Both backend and frontend repositories have their own README files, where versions of required dependencies are listed. The dependencies are:
+
+- Backend: `JDK 21`
+- Frontend: `NodeJS v20 LTS`, `Angular CLI ~18.2.9`
+
+### Configuration and launch
+
+Create a `.env` file inside `docker/` directory, based on `docker/.env.template`.
+
+#### Backend
+
+Open the `backend/hive/` project directory in preferred IDE (VSCode / IntelliJ are fine). The project should load normally and Gradle will take care of fetching the dependencies and building the app. The spring profile configuration in `application.yml` should be set to `"devlocal"`. 
+
+To launch the backend app, the database also needs to be running. To manage the database service container with Docker Compose, here are useful commands (to execute the compose commands successfully, you must be in the `docker/` directory with `docker-compose.yml` in it):
+
+##### Launch the database container
+```sh
+docker compose up -d db
+```
+
+##### Stop and remove the database container
+```sh
+docker compose down db
+```
+
+##### Check the status of running containers
+```sh
+docker ps
+```
+Or just look at the Docker Desktop dashboard on Windows / macOS.
+
+#### Frontend
+
+Open the `frontend/` directory in the preferred IDE (VSCode is fine). In this directory with `package.json` in it, execute `npm install` in the terminal - this will fetch the required dependencies. To run the app, execute `ng serve` in the terminal.
+
+## Containerized development (Devcontainers)
 
 The project contains `.devcontainer/` directory that has separate devcontainers configuration for launching the backend project and frontend project. 
 
-### Specs
+### Dependencies
 
 - Docker is needed
 - Recommended IDE is **Visual Studio Code with** `Dev Containers` **extension installed**
